@@ -1,5 +1,10 @@
 SwiftUI Learning Projects
 
+1. Counter App
+2. Random Color App
+3. Dice Roller
+
+
 01-CounterApp
 02-RandomColorApp
 03-DiceRoller
