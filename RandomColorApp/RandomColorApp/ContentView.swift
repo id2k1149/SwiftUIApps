@@ -24,11 +24,17 @@ struct ContentView: View {
                 )
             }) {
                 Text("Change Color")
-                    .font(.title)
-                    .padding()
-                    .background(Color.black.opacity(0.7))
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal, 30)
+                                    .padding(.vertical, 15)
+                                    .foregroundColor(.white)        // Цвет текста
+                                    .background(Color.blue)        // Голубой фон кнопки
+                                    .clipShape(Capsule())          // Кнопка в форме капсулы
+                                    .overlay(
+                                        Capsule()
+                                            .stroke(Color.black, lineWidth: 2) // Черная окантовка
+                                        )
             }
         }
     }
