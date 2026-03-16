@@ -30,7 +30,12 @@ struct ContentView: View {
                 diceNumber = Int.random(in: 1...6)
 
                 // добавляем вращение
-                rotation += 360
+//                rotation += 360
+//                rotation += Double.random(in: 720...1440)
+                let spins = Double.random(in: 360...720)
+                let direction = Bool.random() ? 1.0 : -1.0
+
+                rotation += spins * direction
 
             }) {
                 Text("Roll Dice")
