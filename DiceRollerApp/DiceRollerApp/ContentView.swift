@@ -25,18 +25,6 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            /*
-            Image("dice\(dice1)")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 200, height: 200)
-                .rotationEffect(.degrees(rotation))
-                // подпрыгивание
-                .scaleEffect(scale)
-                // shadow
-                .shadow(radius: 10)
-                .animation(.easeOut(duration: 0.6), value: rotation)
-             */
             
             HStack(spacing: 0) {
                 
@@ -67,9 +55,6 @@ struct ContentView: View {
                 dice1 = Int.random(in: 1...6)
                 dice2 = Int.random(in: 1...6)
 
-                // добавляем вращение
-//                rotation += 360
-//                rotation += Double.random(in: 720...1440)
                 
                 let spins1 = Double.random(in: 360...720)
                 let spins2 = Double.random(in: 360...720)
@@ -80,7 +65,7 @@ struct ContentView: View {
                 rotation1 += spins1 * direction1
                 rotation2 += spins2 * direction2
                 
-                //*
+                
                 // подпрыгивание
                 scale = 1.5
                 
@@ -93,7 +78,6 @@ struct ContentView: View {
                     offset1 = 0
                     offset2 = 0
                 }
-                // */
 
             }) {
                 Text("Roll Dice")
