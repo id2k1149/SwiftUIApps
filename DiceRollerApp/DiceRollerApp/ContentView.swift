@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var diceNumber = 1 // текущее число кубика
+    @State private var diceNumber = 1
+    @State private var rotation = 0.0
 
     var body: some View {
         VStack(spacing: 40) {
@@ -20,10 +21,17 @@ struct ContentView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 200, height: 200)
+                .rotationEffect(.degrees(rotation))
+                .animation(.easeOut(duration: 0.6), value: rotation)
 
             Button(action: {
-                // Генерация случайного числа от 1 до 6
+
+                // новое случайное число
                 diceNumber = Int.random(in: 1...6)
+
+                // добавляем вращение
+                rotation += 360
+
             }) {
                 Text("Roll Dice")
                     .font(.title2)
@@ -33,10 +41,6 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .background(Color.red)
                     .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(Color.black, lineWidth: 2)
-                    )
             }
         }
         .padding()
