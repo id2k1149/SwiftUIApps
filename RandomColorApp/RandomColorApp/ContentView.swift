@@ -28,12 +28,16 @@ struct ContentView: View {
                                     .fontWeight(.bold)
                                     .padding(.horizontal, 30)
                                     .padding(.vertical, 15)
-                                    .foregroundColor(.white)        // Цвет текста
-                                    .background(Color.blue)        // Голубой фон кнопки
-                                    .clipShape(Capsule())          // Кнопка в форме капсулы
+                                    // Цвет текста
+                                    .foregroundColor(.white)
+                                    // Голубой фон кнопки
+                                    .background(Color.blue)
+                                    // Кнопка в форме капсулы
+                                    .clipShape(Capsule())
                                     .overlay(
                                         Capsule()
-                                            .stroke(Color.black, lineWidth: 2) // Черная окантовка
+                                            // Черная окантовка
+                                            .stroke(Color.black, lineWidth: 2)
                                         )
             }
         }
