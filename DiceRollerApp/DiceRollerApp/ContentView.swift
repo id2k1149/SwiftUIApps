@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var diceNumber = 1
     @State private var rotation = 0.0
+    @State private var scale: CGFloat = 1.0
 
     var body: some View {
         VStack(spacing: 40) {
@@ -22,6 +23,10 @@ struct ContentView: View {
                 .scaledToFit()
                 .frame(width: 200, height: 200)
                 .rotationEffect(.degrees(rotation))
+                // подпрыгивание
+                .scaleEffect(scale)
+                // shadow
+                .shadow(radius: 10)
                 .animation(.easeOut(duration: 0.6), value: rotation)
 
             Button(action: {
@@ -36,6 +41,15 @@ struct ContentView: View {
                 let direction = Bool.random() ? 1.0 : -1.0
 
                 rotation += spins * direction
+                
+                //*
+                // подпрыгивание
+                scale = 1.4
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    scale = 1.0
+                }
+                // */
 
             }) {
                 Text("Roll Dice")
