@@ -23,7 +23,7 @@ struct QuizView: View {
                     onAnswerSelected: { answer in
                         viewModel.answerSelected(answer)
                     },
-                    lastAnswerCorrect: viewModel.lastAnswerCorrect
+                    lastAnswerCorrect: viewModel.lastAnswerCorrect, timeRemaining: viewModel.timeRemaining
                 )
             }
         }

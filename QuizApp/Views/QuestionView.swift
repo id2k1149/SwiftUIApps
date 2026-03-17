@@ -11,9 +11,18 @@ struct QuestionView: View {
     let question: Question
     var onAnswerSelected: (Answer) -> Void
     var lastAnswerCorrect: Bool?  // feedback из ViewModel
+    var timeRemaining: Int
 
     var body: some View {
         VStack(spacing: 20) {
+            if let lastAnswerCorrect = lastAnswerCorrect {
+                // feedback уже есть
+            } else {
+                // Timer
+                Text("Осталось времени: \(timeRemaining) сек")
+                    .font(.subheadline)
+                    .foregroundColor(.orange)
+            }
             // Вопрос
             Text(question.text)
                 .font(.title2)
