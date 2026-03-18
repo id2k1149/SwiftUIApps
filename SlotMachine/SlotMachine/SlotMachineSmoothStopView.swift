@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct SlotMachineSelectionRequiredView: View {
+struct SlotMachineUniformSizeView: View {
     
     let images = ["img1", "img2", "img3"]
-    let imageHeight: CGFloat = 150
+    let itemSize: CGFloat = 80 // размер картинок внизу и на барабане
     
     @State private var offsetY: CGFloat = 0
     @State private var isSpinning = false
@@ -27,7 +27,7 @@ struct SlotMachineSelectionRequiredView: View {
             ZStack {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
-                    .frame(width: 150, height: imageHeight)
+                    .frame(width: itemSize, height: itemSize)
                     .clipped()
                     .overlay(
                         VStack(spacing: 0) {
@@ -35,7 +35,7 @@ struct SlotMachineSelectionRequiredView: View {
                                 Image(images[i % images.count])
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 150, height: imageHeight)
+                                    .frame(width: itemSize, height: itemSize)
                             }
                         }
                         .offset(y: offsetY)
@@ -53,7 +53,6 @@ struct SlotMachineSelectionRequiredView: View {
                     .foregroundColor(.white)
                     .cornerRadius(12)
             }
-            // Доступна только если выбор сделан и барабан не крутится
             .disabled(selectedIndex == nil || isSpinning)
             
             // Горизонтальный ряд картинок для выбора
@@ -62,7 +61,7 @@ struct SlotMachineSelectionRequiredView: View {
                     Image(images[i])
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 80, height: 80)
+                        .frame(width: itemSize, height: itemSize)
                         .padding(4)
                         .background(selectedIndex == i ? Color.blue.opacity(0.3) : Color.clear)
                         .cornerRadius(8)
@@ -93,7 +92,7 @@ struct SlotMachineSelectionRequiredView: View {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
             offsetY -= speed
-            let totalHeight = imageHeight * CGFloat(images.count)
+            let totalHeight = itemSize * CGFloat(images.count)
             if -offsetY >= totalHeight {
                 offsetY += totalHeight
             }
@@ -106,9 +105,9 @@ struct SlotMachineSelectionRequiredView: View {
     }
     
     func startDeceleration() {
-        let totalHeight = imageHeight * CGFloat(images.count)
+        let totalHeight = itemSize * CGFloat(images.count)
         let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
-        let finalOffset = CGFloat(targetIndex) * imageHeight
+        let finalOffset = CGFloat(targetIndex) * itemSize
         let distance = finalOffset - currentPos + totalHeight * 2
         
         let decelerationSteps = 60.0
@@ -134,5 +133,5 @@ struct SlotMachineSelectionRequiredView: View {
 }
 
 #Preview {
-    SlotMachineSelectionRequiredView()
+    SlotMachineUniformSizeView()
 }
