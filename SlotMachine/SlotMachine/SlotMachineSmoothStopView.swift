@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SlotMachineWithSelectionView: View {
+struct SlotMachineSelectionLockView: View {
     
     let images = ["img1", "img2", "img3"]
     let imageHeight: CGFloat = 150
@@ -18,7 +18,7 @@ struct SlotMachineWithSelectionView: View {
     @State private var timer: Timer?
     @State private var targetIndex: Int = 0
     
-    @State private var selectedIndex: Int? = nil // индекс выбранной картинки
+    @State private var selectedIndex: Int? = nil
     
     var body: some View {
         VStack(spacing: 30) {
@@ -70,7 +70,10 @@ struct SlotMachineWithSelectionView: View {
                                 .stroke(selectedIndex == i ? Color.blue : Color.clear, lineWidth: 3)
                         )
                         .onTapGesture {
-                            selectedIndex = i
+                            // Можно менять выбор только если барабан не крутится
+                            if !isSpinning {
+                                selectedIndex = i
+                            }
                         }
                 }
             }
@@ -81,6 +84,7 @@ struct SlotMachineWithSelectionView: View {
     // MARK: - Слот-машина
     
     func startSpinning() {
+        guard !isSpinning else { return }
         isSpinning = true
         speed = 12
         targetIndex = Int.random(in: 0..<images.count)
@@ -94,7 +98,6 @@ struct SlotMachineWithSelectionView: View {
             }
         }
         
-        // Через случайное время начинаем замедление
         let stopTime = Double.random(in: 2.0...4.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + stopTime) {
             startDeceleration()
@@ -130,5 +133,5 @@ struct SlotMachineWithSelectionView: View {
 }
 
 #Preview {
-    SlotMachineWithSelectionView()
+    SlotMachineSelectionLockView()
 }
