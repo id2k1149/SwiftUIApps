@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SlotMachineLinearStopView: View {
+struct SlotMachineWithSelectionView: View {
     
     let images = ["img1", "img2", "img3"]
     let imageHeight: CGFloat = 150
@@ -18,9 +18,12 @@ struct SlotMachineLinearStopView: View {
     @State private var timer: Timer?
     @State private var targetIndex: Int = 0
     
+    @State private var selectedIndex: Int? = nil // индекс выбранной картинки
+    
     var body: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 30) {
             
+            // Барабан
             ZStack {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
@@ -40,6 +43,7 @@ struct SlotMachineLinearStopView: View {
                     .border(Color.black, width: 2)
             }
             
+            // Кнопка вращения
             Button(action: startSpinning) {
                 Text(isSpinning ? "Крутится..." : "Крутить")
                     .font(.title2)
@@ -50,12 +54,35 @@ struct SlotMachineLinearStopView: View {
                     .cornerRadius(12)
             }
             .disabled(isSpinning)
+            
+            // Горизонтальный ряд картинок для выбора
+            HStack(spacing: 20) {
+                ForEach(0..<images.count, id: \.self) { i in
+                    Image(images[i])
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .padding(4)
+                        .background(selectedIndex == i ? Color.blue.opacity(0.3) : Color.clear)
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(selectedIndex == i ? Color.blue : Color.clear, lineWidth: 3)
+                        )
+                        .onTapGesture {
+                            selectedIndex = i
+                        }
+                }
+            }
         }
+        .padding()
     }
+    
+    // MARK: - Слот-машина
     
     func startSpinning() {
         isSpinning = true
-        speed = 12 // постоянная скорость
+        speed = 12
         targetIndex = Int.random(in: 0..<images.count)
         
         timer?.invalidate()
@@ -78,7 +105,7 @@ struct SlotMachineLinearStopView: View {
         let totalHeight = imageHeight * CGFloat(images.count)
         let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
         let finalOffset = CGFloat(targetIndex) * imageHeight
-        let distance = finalOffset - currentPos + totalHeight * 2 // проход несколько циклов
+        let distance = finalOffset - currentPos + totalHeight * 2
         
         let decelerationSteps = 60.0
         let stepSpeedReduction = speed / CGFloat(decelerationSteps)
@@ -103,5 +130,5 @@ struct SlotMachineLinearStopView: View {
 }
 
 #Preview {
-    SlotMachineLinearStopView()
+    SlotMachineWithSelectionView()
 }
