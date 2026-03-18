@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SlotMachineSelectionLockView: View {
+struct SlotMachineSelectionRequiredView: View {
     
     let images = ["img1", "img2", "img3"]
     let imageHeight: CGFloat = 150
@@ -49,11 +49,12 @@ struct SlotMachineSelectionLockView: View {
                     .font(.title2)
                     .padding()
                     .frame(width: 200)
-                    .background(isSpinning ? Color.gray : Color.blue)
+                    .background((selectedIndex == nil || isSpinning) ? Color.gray : Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(12)
             }
-            .disabled(isSpinning)
+            // Доступна только если выбор сделан и барабан не крутится
+            .disabled(selectedIndex == nil || isSpinning)
             
             // Горизонтальный ряд картинок для выбора
             HStack(spacing: 20) {
@@ -70,7 +71,6 @@ struct SlotMachineSelectionLockView: View {
                                 .stroke(selectedIndex == i ? Color.blue : Color.clear, lineWidth: 3)
                         )
                         .onTapGesture {
-                            // Можно менять выбор только если барабан не крутится
                             if !isSpinning {
                                 selectedIndex = i
                             }
@@ -84,7 +84,8 @@ struct SlotMachineSelectionLockView: View {
     // MARK: - Слот-машина
     
     func startSpinning() {
-        guard !isSpinning else { return }
+        guard !isSpinning, selectedIndex != nil else { return }
+        
         isSpinning = true
         speed = 12
         targetIndex = Int.random(in: 0..<images.count)
@@ -133,5 +134,5 @@ struct SlotMachineSelectionLockView: View {
 }
 
 #Preview {
-    SlotMachineSelectionLockView()
+    SlotMachineSelectionRequiredView()
 }
