@@ -7,21 +7,22 @@
 
 import SwiftUI
 
-struct SlotMachineScrollView: View {
+struct SlotMachineSmoothStopView: View {
     
     let images = ["img1", "img2", "img3"]
+    let imageHeight: CGFloat = 150
     
     @State private var offsetY: CGFloat = 0
     @State private var isSpinning = false
-    @State private var timer: Timer?
     
-    let imageHeight: CGFloat = 150
+    @State private var speed: CGFloat = 0
+    @State private var timer: Timer?
+    @State private var targetIndex: Int = 0
     
     var body: some View {
         VStack(spacing: 40) {
             
             ZStack {
-                // Окно слота
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
                     .frame(width: 150, height: imageHeight)
@@ -55,42 +56,57 @@ struct SlotMachineScrollView: View {
     
     func startSpinning() {
         isSpinning = true
-        offsetY = 0
+        speed = 15
+        targetIndex = Int.random(in: 0..<images.count)
         
-        // Таймер для плавного движения барабана
-        timer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { _ in
-            offsetY -= 5
-            
-            // Зацикливание: как только “прошел” один цикл картинок, сброс
-            let totalHeight = imageHeight * CGFloat(images.count)
-            if -offsetY >= totalHeight {
-                offsetY = 0
-            }
+        // Запускаем таймер для плавного движения
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
+            update()
         }
         
-        // Длительность вращения
+        // Через случайное время начинаем замедление
         let stopTime = Double.random(in: 2...4)
         DispatchQueue.main.asyncAfter(deadline: .now() + stopTime) {
-            stopSpinning()
+            startDeceleration()
         }
     }
     
-    func stopSpinning() {
-        timer?.invalidate()
-        timer = nil
-        
-        // Выбираем случайную картинку для показа
-        let finalIndex = Int.random(in: 0..<images.count)
-        withAnimation(.easeOut(duration: 0.5)) {
-            offsetY = -CGFloat(finalIndex) * imageHeight
+    func update() {
+        offsetY -= speed
+        let totalHeight = imageHeight * CGFloat(images.count)
+        if -offsetY >= totalHeight {
+            offsetY += totalHeight
         }
+    }
+    
+    func startDeceleration() {
+        let totalHeight = imageHeight * CGFloat(images.count)
+        let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
+        let finalOffset = CGFloat(targetIndex) * imageHeight
+        let distance = finalOffset - currentPos + totalHeight * 3
+        let decelerationSteps = 60.0
+        let stepSpeedReduction = speed / CGFloat(decelerationSteps)
+        let stepDistance = distance / CGFloat(decelerationSteps)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            isSpinning = false
+        var stepsRemaining = Int(decelerationSteps)
+        
+        Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { timer in
+            if stepsRemaining <= 0 {
+                speed = 0
+                offsetY = -finalOffset
+                isSpinning = false
+                timer.invalidate()
+                return
+            }
+            
+            speed -= stepSpeedReduction
+            offsetY -= stepDistance
+            stepsRemaining -= 1
         }
     }
 }
 
 #Preview {
-    SlotMachineScrollView()
+    SlotMachineSmoothStopView()
 }
