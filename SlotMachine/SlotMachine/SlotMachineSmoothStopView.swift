@@ -14,10 +14,12 @@ struct SlotMachineSmoothStopView: View {
     
     @State private var offsetY: CGFloat = 0
     @State private var isSpinning = false
-    
-    @State private var speed: CGFloat = 0
-    @State private var timer: Timer?
     @State private var targetIndex: Int = 0
+    
+    // Для повторения картинок (чтобы создать эффект бесконечного вращения)
+    var repeatedImages: [String] {
+        Array(repeating: images, count: 3).flatMap { $0 }
+    }
     
     var body: some View {
         VStack(spacing: 40) {
@@ -29,8 +31,8 @@ struct SlotMachineSmoothStopView: View {
                     .clipped()
                     .overlay(
                         VStack(spacing: 0) {
-                            ForEach(0..<images.count * 3, id: \.self) { i in
-                                Image(images[i % images.count])
+                            ForEach(repeatedImages.indices, id: \.self) { i in
+                                Image(repeatedImages[i])
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 150, height: imageHeight)
@@ -55,54 +57,27 @@ struct SlotMachineSmoothStopView: View {
     }
     
     func startSpinning() {
+        guard !isSpinning else { return }
         isSpinning = true
-        speed = 15
+        
+        // Случайная цель
         targetIndex = Int.random(in: 0..<images.count)
         
-        // Запускаем таймер для плавного движения
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
-            update()
+        // Количество повторов для плавного эффекта "бесконечного" вращения
+        let spinRounds = images.count * 3
+        
+        // Случайная длительность вращения
+        let duration = Double.random(in: 2...4)
+        
+        withAnimation(.easeOut(duration: duration)) {
+            // Смещаем на несколько повторов + целевой индекс
+            offsetY = -CGFloat(spinRounds + targetIndex) * imageHeight
         }
         
-        // Через случайное время начинаем замедление
-        let stopTime = Double.random(in: 2...4)
-        DispatchQueue.main.asyncAfter(deadline: .now() + stopTime) {
-            startDeceleration()
-        }
-    }
-    
-    func update() {
-        offsetY -= speed
-        let totalHeight = imageHeight * CGFloat(images.count)
-        if -offsetY >= totalHeight {
-            offsetY += totalHeight
-        }
-    }
-    
-    func startDeceleration() {
-        let totalHeight = imageHeight * CGFloat(images.count)
-        let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
-        let finalOffset = CGFloat(targetIndex) * imageHeight
-        let distance = finalOffset - currentPos + totalHeight * 3
-        let decelerationSteps = 60.0
-        let stepSpeedReduction = speed / CGFloat(decelerationSteps)
-        let stepDistance = distance / CGFloat(decelerationSteps)
-        
-        var stepsRemaining = Int(decelerationSteps)
-        
-        Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { timer in
-            if stepsRemaining <= 0 {
-                speed = 0
-                offsetY = -finalOffset
-                isSpinning = false
-                timer.invalidate()
-                return
-            }
-            
-            speed -= stepSpeedReduction
-            offsetY -= stepDistance
-            stepsRemaining -= 1
+        // По окончании анимации корректируем позицию на точный targetIndex
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            offsetY = -CGFloat(targetIndex) * imageHeight
+            isSpinning = false
         }
     }
 }
