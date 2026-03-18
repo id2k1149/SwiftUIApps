@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct SlotMachineUniformSizeView: View {
+struct SlotMachineGameLogicView: View {
     
     let images = ["img1", "img2", "img3"]
-    let itemSize: CGFloat = 80 // размер картинок внизу и на барабане
+    let itemSize: CGFloat = 80 // размер картинок
     
     @State private var offsetY: CGFloat = 0
     @State private var isSpinning = false
@@ -19,6 +19,7 @@ struct SlotMachineUniformSizeView: View {
     @State private var targetIndex: Int = 0
     
     @State private var selectedIndex: Int? = nil
+    @State private var resultText: String = "" // Win / Lose / Draw
     
     var body: some View {
         VStack(spacing: 30) {
@@ -45,7 +46,7 @@ struct SlotMachineUniformSizeView: View {
             
             // Кнопка вращения
             Button(action: startSpinning) {
-                Text(isSpinning ? "Крутится..." : "Крутить")
+                Text(isSpinning ? "Spinning..." : "Spin")
                     .font(.title2)
                     .padding()
                     .frame(width: 200)
@@ -76,6 +77,14 @@ struct SlotMachineUniformSizeView: View {
                         }
                 }
             }
+            
+            // Результат игры
+            if !resultText.isEmpty {
+                Text(resultText)
+                    .font(.title)
+                    .bold()
+                    .foregroundColor(resultText == "Win" ? .green : (resultText == "Lose" ? .red : .gray))
+            }
         }
         .padding()
     }
@@ -84,7 +93,7 @@ struct SlotMachineUniformSizeView: View {
     
     func startSpinning() {
         guard !isSpinning, selectedIndex != nil else { return }
-        
+        resultText = "" // сброс результата
         isSpinning = true
         speed = 12
         targetIndex = Int.random(in: 0..<images.count)
@@ -122,6 +131,8 @@ struct SlotMachineUniformSizeView: View {
                 offsetY = -finalOffset
                 isSpinning = false
                 timer.invalidate()
+                
+                determineResult()
                 return
             }
             
@@ -130,8 +141,24 @@ struct SlotMachineUniformSizeView: View {
             stepsRemaining -= 1
         }
     }
+    
+    // MARK: - Логика игры: 1>2>3>1
+    func determineResult() {
+        guard let userChoice = selectedIndex else { return }
+        let computerChoice = targetIndex
+        
+        if userChoice == computerChoice {
+            resultText = "Draw"
+        } else if (userChoice == 0 && computerChoice == 1) ||
+                  (userChoice == 1 && computerChoice == 2) ||
+                  (userChoice == 2 && computerChoice == 0) {
+            resultText = "Win"
+        } else {
+            resultText = "Lose"
+        }
+    }
 }
 
 #Preview {
-    SlotMachineUniformSizeView()
+    SlotMachineGameLogicView()
 }
