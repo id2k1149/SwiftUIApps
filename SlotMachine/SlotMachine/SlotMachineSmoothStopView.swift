@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SlotMachineSmoothStopView: View {
+struct SlotMachineSmoothUniformView: View {
     
     let images = ["img1", "img2", "img3"]
     let imageHeight: CGFloat = 150
@@ -56,17 +56,16 @@ struct SlotMachineSmoothStopView: View {
     
     func startSpinning() {
         isSpinning = true
-        speed = 15
+        speed = 12 // постоянная скорость
         targetIndex = Int.random(in: 0..<images.count)
         
-        // Запускаем таймер для плавного движения
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
             update()
         }
         
-        // Через случайное время начинаем замедление
-        let stopTime = Double.random(in: 2...4)
+        // Через случайное время начинаем плавное замедление
+        let stopTime = Double.random(in: 2.0...4.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + stopTime) {
             startDeceleration()
         }
@@ -74,6 +73,8 @@ struct SlotMachineSmoothStopView: View {
     
     func update() {
         offsetY -= speed
+        
+        // Зацикливание барабана
         let totalHeight = imageHeight * CGFloat(images.count)
         if -offsetY >= totalHeight {
             offsetY += totalHeight
@@ -84,7 +85,8 @@ struct SlotMachineSmoothStopView: View {
         let totalHeight = imageHeight * CGFloat(images.count)
         let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
         let finalOffset = CGFloat(targetIndex) * imageHeight
-        let distance = finalOffset - currentPos + totalHeight * 3
+        let distance = finalOffset - currentPos + totalHeight * 2 // чтобы пройти 2 цикла
+        
         let decelerationSteps = 60.0
         let stepSpeedReduction = speed / CGFloat(decelerationSteps)
         let stepDistance = distance / CGFloat(decelerationSteps)
@@ -108,5 +110,5 @@ struct SlotMachineSmoothStopView: View {
 }
 
 #Preview {
-    SlotMachineSmoothStopView()
+    SlotMachineSmoothUniformView()
 }
