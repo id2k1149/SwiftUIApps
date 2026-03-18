@@ -11,7 +11,7 @@ import SwiftUI
 struct SlotMachineApp: App {
     var body: some Scene {
         WindowGroup {
-            SlotMachineSmoothUniformView()
+            SlotMachineLinearStopView()
         }
     }
 }

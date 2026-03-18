@@ -7,14 +7,13 @@
 
 import SwiftUI
 
-struct SlotMachineSmoothUniformView: View {
+struct SlotMachineLinearStopView: View {
     
     let images = ["img1", "img2", "img3"]
     let imageHeight: CGFloat = 150
     
     @State private var offsetY: CGFloat = 0
     @State private var isSpinning = false
-    
     @State private var speed: CGFloat = 0
     @State private var timer: Timer?
     @State private var targetIndex: Int = 0
@@ -61,23 +60,17 @@ struct SlotMachineSmoothUniformView: View {
         
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
-            update()
+            offsetY -= speed
+            let totalHeight = imageHeight * CGFloat(images.count)
+            if -offsetY >= totalHeight {
+                offsetY += totalHeight
+            }
         }
         
-        // Через случайное время начинаем плавное замедление
+        // Через случайное время начинаем замедление
         let stopTime = Double.random(in: 2.0...4.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + stopTime) {
             startDeceleration()
-        }
-    }
-    
-    func update() {
-        offsetY -= speed
-        
-        // Зацикливание барабана
-        let totalHeight = imageHeight * CGFloat(images.count)
-        if -offsetY >= totalHeight {
-            offsetY += totalHeight
         }
     }
     
@@ -85,7 +78,7 @@ struct SlotMachineSmoothUniformView: View {
         let totalHeight = imageHeight * CGFloat(images.count)
         let currentPos = (-offsetY).truncatingRemainder(dividingBy: totalHeight)
         let finalOffset = CGFloat(targetIndex) * imageHeight
-        let distance = finalOffset - currentPos + totalHeight * 2 // чтобы пройти 2 цикла
+        let distance = finalOffset - currentPos + totalHeight * 2 // проход несколько циклов
         
         let decelerationSteps = 60.0
         let stepSpeedReduction = speed / CGFloat(decelerationSteps)
@@ -110,5 +103,5 @@ struct SlotMachineSmoothUniformView: View {
 }
 
 #Preview {
-    SlotMachineSmoothUniformView()
+    SlotMachineLinearStopView()
 }
